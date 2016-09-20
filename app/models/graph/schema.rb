@@ -20,8 +20,8 @@ CityType = GraphQL::ObjectType.define do
 
   field :id, !types.ID
   field :name, !types.String
-  field :visitors, !types.Int
-  field :favourites, !types.Int
+  field :visitors, types.Int
+  field :favourites, types.Int
   field :users, -> { types[UserType] }, 'users who visited'
   field :comments, -> { types[CommentType] }, 'comments on city'
 end
@@ -75,6 +75,7 @@ MutationType = GraphQL::ObjectType.define do
   field :addComment, field: AddCommentMutation.field
   field :addCity, field: AddCityMutation.field
   field :updateComment, field: EditCommentMutation.field
+  field :addVisitedCity, field: AddCityToUserMutation.field
 
 end
 
@@ -135,6 +136,27 @@ AddCityMutation = GraphQL::Relay::Mutation.define do
   resolve -> (inputs, ctx) {
     city = City.create(id: inputs[:cityId], name: inputs[:name])
     {city: city}
+  }
+end
+
+AddCityToUserMutation = GraphQL::Relay::Mutation.define do
+  # Used to name derived types:
+  name 'AddCityToUser'
+
+  # Accessible from `input` in the resolve function:
+  input_field :cityId, !types.ID
+  input_field :userId, !types.ID
+
+  # The result has access to these fields,
+  # resolve must return a hash with these keys
+  return_field :user, UserType
+
+  # The resolve proc is where you alter the system state.
+  resolve -> (inputs, ctx) {
+    user = User.find(inputs[:userId])
+    city = City.find(inputs[:cityId])
+    user.cities << city
+    {user: user}
   }
 end
 
