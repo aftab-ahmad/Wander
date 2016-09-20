@@ -7,6 +7,11 @@ UserType = GraphQL::ObjectType.define do
   field :followers, -> { types[UserType] }, 'Some followers to lean on'
   field :cities, -> { types[CityType] }, 'Cities visited'
   field :comments, -> { types[CommentType] }, 'comments made by user'
+  field :imageUrl, !types.String, 'user image url' do
+    resolve -> (user, args, ctx) {
+      user.image.url
+    }
+  end
 end
 
 CityType = GraphQL::ObjectType.define do
