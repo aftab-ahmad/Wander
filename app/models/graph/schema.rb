@@ -66,6 +66,59 @@ QueryType = GraphQL::ObjectType.define do
 
 end
 
+# Define the mutation type
+MutationType = GraphQL::ObjectType.define do
+  name 'Mutation'
+  description 'The root of all mutations'
+
+  field :addUser, field: AddUserMutation.field
+  field :addComment, field: AddCommentMutation.field
+
+end
+
+AddUserMutation = GraphQL::Relay::Mutation.define do
+  # Used to name derived types:
+  name 'AddUser'
+
+  # Accessible from `input` in the resolve function:
+  input_field :userId, !types.ID
+  input_field :name, !types.String
+
+  # The result has access to these fields,
+  # resolve must return a hash with these keys
+  return_field :user, UserType
+
+  # The resolve proc is where you alter the system state.
+  resolve -> (inputs, ctx) {
+    user = User.create(id: inputs[:userId], name: inputs[:name])
+    {user: user}
+  }
+end
+
+AddCommentMutation = GraphQL::Relay::Mutation.define do
+  # Used to name derived types:
+  name 'AddComment'
+
+  # Accessible from `input` in the resolve function:
+  input_field :userId, !types.ID
+  input_field :cityId, !types.ID
+  input_field :message, !types.String
+
+  # The result has access to these fields,
+  # resolve must return a hash with these keys
+  return_field :user, UserType
+
+  # The resolve proc is where you alter the system state.
+  resolve -> (inputs, ctx) {
+    user = User.find(inputs[:userId])
+    user.comments.create!(user_id: inputs[:userId], city_id: inputs[:cityId], message: inputs[:message])
+
+    {user: user}
+  }
+end
+
+
 Graph::Schema = GraphQL::Schema.new(
     query: QueryType,
+    mutation: MutationType
 )
