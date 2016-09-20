@@ -73,6 +73,8 @@ MutationType = GraphQL::ObjectType.define do
 
   field :addUser, field: AddUserMutation.field
   field :addComment, field: AddCommentMutation.field
+  field :addCity, field: AddCityMutation.field
+  field :updateComment, field: EditCommentMutation.field
 
 end
 
@@ -114,6 +116,45 @@ AddCommentMutation = GraphQL::Relay::Mutation.define do
     user.comments.create!(user_id: inputs[:userId], city_id: inputs[:cityId], message: inputs[:message])
 
     {user: user}
+  }
+end
+
+AddCityMutation = GraphQL::Relay::Mutation.define do
+  # Used to name derived types:
+  name 'AddCity'
+
+  # Accessible from `input` in the resolve function:
+  input_field :cityId, !types.ID
+  input_field :name, !types.String
+
+  # The result has access to these fields,
+  # resolve must return a hash with these keys
+  return_field :city, CityType
+
+  # The resolve proc is where you alter the system state.
+  resolve -> (inputs, ctx) {
+    city = City.create(id: inputs[:cityId], name: inputs[:name])
+    {city: city}
+  }
+end
+
+EditCommentMutation = GraphQL::Relay::Mutation.define do
+  # Used to name derived types:
+  name 'EditComment'
+
+  # Accessible from `input` in the resolve function:
+  input_field :id, !types.ID
+  input_field :message, !types.String
+
+  # The result has access to these fields,
+  # resolve must return a hash with these keys
+  return_field :comment, CommentType
+
+  # The resolve proc is where you alter the system state.
+  resolve -> (inputs, ctx) {
+    comment = Comment.find(inputs[:id])
+    comment.update(message: inputs[:message])
+    { comment: comment }
   }
 end
 
