@@ -1,6 +1,6 @@
 class User < ActiveRecord::Base
-  has_many :comments
-  has_many :cities, :through => :comments
+  has_many :comments, :dependent => :destroy
+  has_many :cities, :through => :comments, :dependent => :destroy
 
   has_and_belongs_to_many :followers,
                           class_name: 'User',

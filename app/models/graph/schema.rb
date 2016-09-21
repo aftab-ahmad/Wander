@@ -72,9 +72,10 @@ MutationType = GraphQL::ObjectType.define do
   description 'The root of all mutations'
 
   field :addUser, field: AddUserMutation.field
+  field :deleteUser, field: DeleteUserMutation.field
   field :addComment, field: AddCommentMutation.field
-  field :addCity, field: AddCityMutation.field
   field :updateComment, field: EditCommentMutation.field
+  field :addCity, field: AddCityMutation.field
   field :addVisitedCity, field: AddCityToUserMutation.field
 
 end
@@ -94,6 +95,25 @@ AddUserMutation = GraphQL::Relay::Mutation.define do
   # The resolve proc is where you alter the system state.
   resolve -> (inputs, ctx) {
     user = User.create(id: inputs[:userId], name: inputs[:name])
+    {user: user}
+  }
+end
+
+DeleteUserMutation = GraphQL::Relay::Mutation.define do
+  # Used to name derived types:
+  name 'DeleteUser'
+
+  # Accessible from `input` in the resolve function:
+  input_field :userId, !types.ID
+
+  # The result has access to these fields,
+  # resolve must return a hash with these keys
+  return_field :user, UserType
+
+  # The resolve proc is where you alter the system state.
+  resolve -> (inputs, ctx) {
+    user = User.find(inputs[:userId])
+    user.destroy
     {user: user}
   }
 end
@@ -179,7 +199,6 @@ EditCommentMutation = GraphQL::Relay::Mutation.define do
     { comment: comment }
   }
 end
-
 
 Graph::Schema = GraphQL::Schema.new(
     query: QueryType,
