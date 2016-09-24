@@ -222,7 +222,7 @@ EditCommentMutation = GraphQL::Relay::Mutation.define do
   }
 end
 
-Graph::Schema = GraphQL::Schema.new(
+Graph::Schema = GraphQL::Schema.define(
     query: QueryType,
     mutation: MutationType
 )
