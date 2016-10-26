@@ -11,4 +11,7 @@ class User < ActiveRecord::Base
   has_attached_file :image, styles: { small: '64x64', med: '100x100', large: '200x200' },
       :default_url => 'http://www.m1m.com/wp-content/uploads/2015/06/default-user-avatar.png'
 
+  validates :name, presence: true
+  validates :id, presence: true
+
 end

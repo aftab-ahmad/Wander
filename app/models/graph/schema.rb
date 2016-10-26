@@ -24,6 +24,16 @@ CityType = GraphQL::ObjectType.define do
   field :favourites, types.Int
   field :users, -> { types[UserType] }, 'users who visited'
   field :comments, -> { types[CommentType] }, 'comments on city'
+  field :imageUrl, !types.String, 'city image url' do
+    resolve -> (city, args, ctx) {
+      city.image.url
+    }
+  end
+  field :imageColor, types.String, 'image overlay color' do
+    resolve -> (city, args, ctx) {
+      city.color
+    }
+  end
 end
 
 CommentType = GraphQL::ObjectType.define do
@@ -96,6 +106,7 @@ AddUserMutation = GraphQL::Relay::Mutation.define do
   # The resolve proc is where you alter the system state.
   resolve -> (inputs, ctx) {
     user = User.create(id: inputs[:userId], name: inputs[:name])
+
     {user: user}
   }
 end
