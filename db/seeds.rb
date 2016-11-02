@@ -6,10 +6,10 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-user = User.create(name: 'Jon Snow')
-user1 = User.create(name: 'Ned Stark')
+user = User.create(id: '1', name: 'Jon Snow')
+user1 = User.create(id: '2', name: 'Ned Stark')
 
-City.create(name: 'Winterfell', visitors: 10, favourites: 20)
-Comment.create(city_id: 1, user_id: 1, message: 'Winterfell is cold')
+City.create(id: '1', name: 'Winterfell', visitors: 10, favourites: 20)
+Comment.create(id: '1', city_id: 1, user_id: 1, message: 'Winterfell is cold')
 
 user.followers << user1

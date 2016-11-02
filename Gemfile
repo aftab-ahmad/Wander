@@ -26,12 +26,16 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # Help serialize models to JSON
 gem 'active_model_serializers'
 
+
 # GraphQL
 gem 'graphql'
 gem 'graphiql-rails'
 
 # Paperclip
 gem 'paperclip'
+
+# Ruby version
+ruby '2.3.1'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
