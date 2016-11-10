@@ -159,6 +159,9 @@ AddCityMutation = GraphQL::Relay::Mutation.define do
   # Accessible from `input` in the resolve function:
   input_field :cityId, !types.ID
   input_field :name, !types.String
+  input_field :visitors, types.Int
+  input_field :favourites, types.Int
+  input_field :imageUrl, types.String
 
   # The result has access to these fields,
   # resolve must return a hash with these keys
@@ -166,7 +169,8 @@ AddCityMutation = GraphQL::Relay::Mutation.define do
 
   # The resolve proc is where you alter the system state.
   resolve -> (inputs, ctx) {
-    city = City.create(id: inputs[:cityId], name: inputs[:name])
+    city = City.create(id: inputs[:cityId], name: inputs[:name], visitors: inputs[:visitors],
+                       favourites: inputs[:favourites], imageUrl: inputs[:imageUrl])
     {city: city}
   }
 end
