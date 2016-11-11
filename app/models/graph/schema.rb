@@ -24,11 +24,6 @@ CityType = GraphQL::ObjectType.define do
   field :favourites, types.Int
   field :users, -> { types[UserType] }, 'users who visited'
   field :comments, -> { types[CommentType] }, 'comments on city'
-  field :imageUrl, !types.String, 'city image url' do
-    resolve -> (city, args, ctx) {
-      city.image.url
-    }
-  end
   field :imageColor, types.String, 'image overlay color' do
     resolve -> (city, args, ctx) {
       city.color
@@ -168,9 +163,9 @@ AddCityMutation = GraphQL::Relay::Mutation.define do
   return_field :city, CityType
 
   # The resolve proc is where you alter the system state.
-  resolve -> (inputs, ctx) {
+  resolve -> (object, inputs, ctx) {
     city = City.create(id: inputs[:cityId], name: inputs[:name], visitors: inputs[:visitors],
-                       favourites: inputs[:favourites], imageUrl: inputs[:imageUrl])
+                       favourites: inputs[:favourites])
     {city: city}
   }
 end
@@ -202,17 +197,18 @@ UpdateCityMutation = GraphQL::Relay::Mutation.define do
 
   # Accessible from `input` in the resolve function:
   input_field :cityId, !types.ID
-  input_field :favourites, !types.Int
-  input_field :visitors, !types.Int
+  input_field :favourites, types.Int
+  input_field :visitors, types.Int
+  input_field :imageUrl, types.String
 
   # The result has access to these fields,
   # resolve must return a hash with these keys
   return_field :city, CityType
 
   # The resolve proc is where you alter the system state.
-  resolve -> (inputs, ctx) {
+  resolve -> (object, inputs, ctx) {
     city = City.find(inputs[:cityId])
-    city.update(favourites: inputs[:favourites], visitors: inputs[:visitors])
+    city.update(image_file_name: inputs[:imageUrl])
     {city: city}
   }
 end

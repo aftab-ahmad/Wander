@@ -2,7 +2,12 @@ class GraphqlController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
   def query
-    result_hash = Graph::Schema.execute(params[:query], variables: params[:variables] || {}, )
+    if params[:variables].blank?
+      result_hash = Graph::Schema.execute(params[:query], variables: {})
+    else
+      result_hash = Graph::Schema.execute(params[:query], variables: JSON.parse(params[:variables]))
+    end
+
     render json: result_hash
   end
 
@@ -11,4 +16,5 @@ class GraphqlController < ApplicationController
     result_hash = Graph::Schema.execute(query, variables: params[:variables])
     render json: result_hash
   end
+
 end

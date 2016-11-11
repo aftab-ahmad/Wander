@@ -26,13 +26,12 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # Help serialize models to JSON
 gem 'active_model_serializers'
 
-
 # GraphQL
 gem 'graphql'
 gem 'graphiql-rails'
 
-# Paperclip
-gem 'paperclip'
+# JSON
+require 'json'
 
 # Ruby version
 ruby '2.3.1'
